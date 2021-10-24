@@ -25,15 +25,22 @@ scenarios revolved around the following five questions:
 •	Which areas are low-lying lands? And Which areas might be affected by flood when hit by a storm?
 
 These scenarios were brock down into several steps. Fore example, here is a spatial question for scenario 4:
+
 What is the greenness score for cycling or walking in Enschede?
+
 In this scenario, we wish to generate a raster road map that shows the greenness score calculated based on NDVI. The datasets needed for this scenario consists
 of Enschede roads polyline and the NDVI raster. The steps in the scenario are:
+
 •	Create the source dataset as the starting point of the route, destination dataset as the ending point of the route.
+
 •	Turn road vector data into raster by using Polyline to Raster tool. The road as value 1, outside of the road will be no data. (note that cell size needs to bigger
 than NDIV cell size)
+
 •	Create the cost dataset by multiplying NDVI and Road raster using the Raster calculator.
+
 •	Perform cost distance analysis using the source (file name: Source) and cost datasets as inputs. The distance dataset created from this tool is a raster in which
 the value of each cell is the accumulated cost of traveling from each cell back to the source.
+
 •	Find the least-cost path by using the Cost Path tool. Input destination (file name: destination).
 
 In the next phase, The results of the five scenarios were wrapped in RDF files using various vocabularies (please see RDFs folder). The vocabularies are used for the construction
