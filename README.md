@@ -2,8 +2,8 @@
 This work investigated the functional similarity of GIS software packages by assessing the generalization effectiveness of the Core Concept Datatype (CCD) ontology.
 More precisely, A GIS tool can be considered a GI-function which takes a certain input, transforms it, and returns an output. A workflow is then considered a sequence
 of functions and their inputs and outputs. This sequence of functions can be varied in different software packages and may be defined differently by GIS experts.
-The research pursues to find an answer to the question: To what extent can the semantic values of data inputs and outputs be used to generalize the functionality of tools 
-and workflows in different GIS-software environments?
+The research pursues to find an answer to the question:
+To what extent can the semantic values of data inputs and outputs be used to generalize the functionality of tools and workflows in different GIS-software environments?
 The research question is broken down into the following sub-questions:
 1)	From a conceptual perspective, what is the relation between GIS-tools and workflows? 
 2)	How contentious is the interpretation of the semantics of inputs and outputs when using the CCD ontology?
