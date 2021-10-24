@@ -1,0 +1,140 @@
+@prefix wf: <http://geographicknowledge.de/vocab/Workflow.rdf#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix tools: <http://geographicknowledge.de/vocab/GISTools.rdf#>.
+@prefix ccd: <http://geographicknowledge.de/vocab/CoreConceptData.rdf#>.
+@prefix exm: <http://geographicknowledge.de/vocab/ExtensiveMeasures.rdf#>.
+
+# author @Bahadir
+# Tools for scenario 1
+#Clip
+<https://docs.qgis.org/testing/en/docs/user_manual/processing_algs/qgis/vectoroverlay.html#qgisclip> tools:implements tools:ClipField2ObjectExtent .
+tools:ClipObject2FieldExtent rdfs:label "Clips some object to the extent of field layer." ;
+    wf:input1 [ a ccd:PlainVectorRegionA, ccd:NominalA, ccd:FieldQ ] ;
+    wf:input2 [ a ccd:PlainVectorRegionA, ccd:NominalA, ccd:ObjectQ ] ;
+    wf:output [ a ccd:PlainVectorRegionA, ccd:NominalA, ccd:ObjectQ ] .
+
+<https://docs.qgis.org/testing/en/docs/user_manual/processing_algs/qgis/vectoroverlay.html#qgisclip> tools:implements tools:ClipObject2FieldExtent .
+tools:ClipObject2FieldExtent rdfs:label "Clips some field layer to the extent of an Field layer." ;
+    wf:input1 [ a ccd:PlainVectorRegionA, ccd:NominalA, ccd:FieldQ ] ;
+    wf:input2 [ a ccd:VectorTessellationA, ccd:NominalA, ccd:FieldQ ] ;
+    wf:output [ a ccd:VectorTessellationA, ccd:NominalA, ccd:FieldQ ] .
+
+<https://docs.qgis.org/testing/en/docs/user_manual/processing_algs/qgis/vectoroverlay.html#qgisclip> tools:implements tools:ClipField2FieldExtent .
+tools:ClipField2FieldExtent rdfs:label "Clips some field raster to the extent of a field layer." ;
+    wf:input1 [ a ccd:VectorTesselationA, ccd:NominalA, ccd:FieldQ ] ;
+    wf:input2 [ a ccd:PlainVectorRegionA, ccd:BooleanA, ccd:FieldQ ] ;
+    wf:output [ a ccd:PlainVectorRegionA, ccd:BooleanA, ccd:FieldQ ] .
+    
+# Buffer
+<https://docs.qgis.org/testing/en/docs/user_manual/processing_algs/qgis/vectorgeometry.html#buffer> tools:implements tools:BufferField .
+tools:BufferField rdfs:label "Create a zone around a field layer measured in units of distance." ;
+    wf:input1 [ a ccd:PlainVectorRegionA, ccd:NominalA, ccd:ObjectQ ] ; 
+    wf:output [ a ccd:PlainVectorRegionA, ccd:BooleanA, ccd:FieldQ ] .
+    
+# Merge
+<https://docs.qgis.org/3.10/en/docs/user_manual/processing_algs/qgis/vectorgeneral.html?highlight=merge#merge-vector-layers> tools:implements tools:Merge .
+tools:Merge rdfs:label "Create one polygon from all buffered polygons" ;
+    wf:input1 [ a ccd:VectorTesselationA, ccd:BooleanA, ccd:FieldQ ] ; 
+    wf:input2 [ a ccd:VectorTesselationA, ccd:BooleanA, ccd:FieldQ ] ; 
+    wf:output [ a ccd:VectorTesselationA, ccd:BooleanA, ccd:FieldQ ] .
+
+    
+# Tools for workflow 2
+# Point to raster
+<http://www.saga-gis.org/saga_tool_doc/6.3.0/grid_gridding_10.html> tools:implements tools:RasterizePoints .
+tools:RasterizePoints rdfs:label "Rasterize polygons representing categories." ;
+	wf:input1 [ a ccd:PointA, ccd:NominalA, ccd:ObjectQ ] ;
+	wf:output [ a ccd:RasterA, ccd:BooleanA, ccd:FieldQ ] .
+## Also workflow 4-3, 4-5
+
+# Proximity raster
+<http://www.saga-gis.org/saga_tool_doc/6.3.0/grid_tools_26.html> tools:implements tools:ProximityRaster .
+tools:ProximityRaster rdfs:label "Calculates a grid with euclidean distance to feature cells (not no-data cells)." ;
+    wf:input1 [ a ccd:RasterA, ccd:BooleanA, ccd:FieldQ ] ; 
+    wf:output [ a ccd:RasterA, ccd:IntervalA, ccd:FieldQ ] .
+
+# Reclassify by table
+<https://docs.qgis.org/testing/en/docs/user_manual/processing_algs/qgis/rasteranalysis.html#reclassify-by-table> tools:implements tools:ReclassifyByTable .
+tools:ReclassifyByTable rdfs:label "Reclassifies a raster band by assigning new class values based on the ranges specified in a fixed table." ;
+    wf:input1 [ a ccd:RasterA, ccd:IntervalA, ccd:FieldQ ] ;  
+    wf:output [ a ccd:RasterA, ccd:IntervalA, ccd:FieldQ ] .
+
+# Raster calculator
+<https://docs.qgis.org/testing/en/docs/user_manual/processing_algs/qgis/rasteranalysis.html#raster-calculator> tools:implements tools:LocalMapAlgebraMultiplyOrdinalOrdinalNominal .
+tools:LocalMapAlgebraMultiplyOrdinalOrdinalNominal rdfs:label "Performs algebraic operations using raster layers." ;
+	wf:input1 [ a ccd:RasterA, ccd:IntervalA, ccd:FieldQ ] ;
+	wf:input2 [ a ccd:RasterA, ccd:IntervalA, ccd:FieldQ ] ;
+	wf:input3 [ a ccd:RasterA, ccd:NominalA, ccd:FieldQ ] ;
+	wf:output [ a ccd:RasterA, ccd:OrdinalA, ccd:FieldQ ] .
+
+## (for workflow 4-2)
+<https://docs.qgis.org/testing/en/docs/user_manual/processing_algs/qgis/rasteranalysis.html#raster-calculator> tools:implements tools:LocalMapAlgebraMultiplyNominalRatio .
+tools:LocalMapAlgebraMultiplyNominalRatio rdfs:label "Performs algebraic operations using raster layers." ;
+	wf:input1 [ a ccd:RasterA, ccd:NominalA, ccd:FieldQ ] ;
+	wf:input2 [ a ccd:RasterA, ccd:RatioA, ccd:FieldQ ] ;
+	wf:output [ a ccd:RasterA, ccd:RatioA, ccd:FieldQ ] .
+
+## (for workflow 6-1)
+<https://docs.qgis.org/testing/en/docs/user_manual/processing_algs/qgis/rasteranalysis.html#raster-calculator> tools:implements tools:LocalMapAlgebraRatio .
+tools:LocalMapAlgebraRatio rdfs:label "Performs algebraic operations using raster layers." ;
+	wf:input1 [ a ccd:RasterA, ccd:IntervalA, ccd:FieldQ ] ;
+	wf:output [ a ccd:RasterA, ccd:BooleanA, ccd:FieldQ ] .
+
+# Majority Filter
+<http://www.saga-gis.org/saga_tool_doc/6.3.0/grid_filter_6.html> tools:implements tools:MajorityFilter .
+tools:MajorityFilter rdfs:label "Majority filter for grids." ;
+    wf:input1 [ a ccd:RasterA, ccd:OrdinalA, ccd:FieldQ ] ;
+    wf:output [ a ccd:RasterA, ccd:OrdinalA, ccd:FieldQ ] .    
+    
+# Poligonize
+<https://docs.qgis.org/testing/en/docs/user_manual/processing_algs/qgis/vectorgeometry.html#polygonize> tools:implements tools:Poligonize .
+tools:Poligonize rdfs:label "Creates a polygon layer whose features boundaries are generated from a line layer of closed features." ;
+	wf:input1 [ a ccd:RasterA, ccd:OrdinalA, ccd:FieldQ ] ;
+	wf:output [ a ccd:PlainVectorRegionA, ccd:OrdinalA, ccd:ObjectQ ] .
+
+
+#  Tools for workflow 3 
+# Extract By Mask
+<https://docs.qgis.org/3.10/en/docs/user_manual/processing_algs/gdal/rasterextraction.html?highlight=clip%20raster%20mask%20layer#clip-raster-by-mask-layer> tools:implements tools:ClipRasterBymaskLayer .
+tools:ClipRasterBymaskLayer rdfs:label "Clips any GDAL-supported raster by a vector mask layer." ;
+    wf:input1 [ a ccd:PlainVectorRegionA, ccd:NominalA, ccd:ObjectQ ] ; 
+    wf:input2 [ a ccd:RasterA, ccd:IntervalA, ccd:FieldQ ] ; 
+    wf:output [ a ccd:RasterA, ccd:IntervalA, ccd:FieldQ ] . 
+
+#2 Surface Volume
+<https://docs.qgis.org/testing/en/docs/user_manual/processing_algs/qgis/rasteranalysis.html#raster-surface-volume> tools:implements tools:SurfaceVolume .
+tools:SurfaceVolume rdfs:label "Calculates the volume under a raster surface relative to a given base level." ;
+    wf:input1 [ a ccd:RasterA, ccd:IntervalA, ccd:FieldQ ] ;
+    wf:output [ a ccd:RasterA, ccd:CountA, ccd:FieldQ ] .
+    
+
+# Tools for workflow 4
+# Line to raster
+<http://www.saga-gis.org/saga_tool_doc/6.3.0/grid_gridding_10.html> tools:implements tools:RasterizeLines . 
+tools:Rasterize rdfs:label "Rasterize polygons representing categories." ;
+	wf:input1 [ a ccd:LineA, ccd:NominalA, ccd:NetworkQ ] ;
+	wf:output [ a ccd:RasterA, ccd:NominalA, ccd:FieldQ ] .
+	
+# Accumulated cost
+<http://www.saga-gis.org/saga_tool_doc/6.3.0/grid_analysis_0.html> tools:implements tools:AccumulatedCost .
+tools:AccumulatedCost rdfs:label "Calculation of accumulated cost, either isotropic or anisotropic, if direction of maximum cost is specified." ;
+	wf:input1 [ a ccd:RasterA, ccd:NominalA, ccd:FieldQ ] ;
+	wf:input2 [ a ccd:RasterA, ccd:RatioA, ccd:FieldQ ] ;
+	wf:output [ a ccd:RasterA, ccd:RatioA, ccd:FieldQ ] .
+    
+# Least cost path
+<http://www.saga-gis.org/saga_tool_doc/6.3.0/grid_analysis_5.html> tools:implements tools:LeastCostPath .
+tools:LeastCostPath rdfs:label "Takes an accumulated cost surface grid and a point shapefile as input." ;
+	wf:input1 [ a ccd:RasterA, ccd:NominalA, ccd:FieldQ ] ;
+	wf:input2 [ a ccd:RasterA, ccd:RatioA, ccd:FieldQ ] ;
+	wf:output [ a ccd:RasterA, ccd:RatioA, ccd:FieldQ ] .
+	
+
+# Tools for workflow 6
+# Zonal statistics 
+<https://docs.qgis.org/testing/en/docs/user_manual/processing_algs/qgis/rasteranalysis.html#zonal-statistics> tools:implements tools:ZonalStatistics .
+tools:ZonalStatistics rdfs:label "Calculates statistics of a raster layer for each feature of an overlapping polygon vector layer." ;
+	wf:input1 [ a ccd:RasterA, ccd:BooleanA, ccd:FieldQ ] ;
+	wf:input2 [ a ccd:PlainVectorRegionA, ccd:NominalA, ccd:FieldQ ] ;
+	wf:output [ a ccd:PlainVectorRegionA, ccd:CountA, ccd:ObjectQ ] .

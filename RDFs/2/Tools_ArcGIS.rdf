@@ -1,0 +1,150 @@
+@prefix wf: <http://geographicknowledge.de/vocab/Workflow.rdf#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix tools: <http://geographicknowledge.de/vocab/GISTools.rdf#>.
+@prefix ccd: <http://geographicknowledge.de/vocab/CoreConceptData.rdf#>.
+@prefix exm: <http://geographicknowledge.de/vocab/ExtensiveMeasures.rdf#>.
+
+# @Chia-Yun
+# ArcGIS Pro tools in scenario 1 2 3 4 6 
+
+#1-1 Clip
+<https://pro.arcgis.com/en/pro-app/tool-reference/analysis/clip.htm> tools:implements tools:ClipObject2ObjectExtent.
+tools:ClipObject2ObjectExtent rdfs:label "Extracts input features that overlay the clip features.";
+	wf:input1 [ a ccd:PlainVectorRegionA, ccd:NominalA, ccd:ObjectQ ];
+	wf:input2 [ a ccd:PlainVectorRegionA, ccd:NominalA, ccd:ObjectQ ];
+	wf:output [ a ccd:PlainVectorRegionA, ccd:NominalA, ccd:ObjectQ ].
+
+<https://pro.arcgis.com/en/pro-app/tool-reference/analysis/clip.htm> tools:implements tools:ClipObject2FieldExtent.
+tools:ClipObject2FieldExtent rdfs:label "Extracts input features that overlay the clip features.";
+	wf:input1 [ a ccd:PlainVectorRegionA, ccd:NominalA, ccd:ObjectQ ];
+	wf:input2 [ a ccd:VectorTessellationA, ccd:NominalA, ccd:FieldQ ];
+	wf:output [ a ccd:PlainVectorRegionA, ccd:NominalA, ccd:ObjectQ ].
+	
+
+<https://pro.arcgis.com/en/pro-app/tool-reference/analysis/clip.htm> tools:implements tools:ClipObject2FieldExtent.
+tools:ClipObject2FieldExtent rdfs:label "Extracts input features that overlay the clip features.";
+	wf:input1 [ a ccd:PlainVectorRegionA, ccd:NominalA, ccd:ObjectQ ];
+	wf:input2 [ a ccd:PlainVectorRegionA, ccd:BooleanA, ccd:FieldQ ];
+	wf:output [ a ccd:PlainVectorRegionA, ccd:BooleanA, ccd:FieldQ ].
+	
+	
+#1-2 Buffer
+<https://pro.arcgis.com/en/pro-app/tool-reference/analysis/buffer.htm> tools:implements tools:Buffer.
+tools:Buffer rdfs:label "Creates buffer polygons around input features to a specified distance.";
+	wf:input1 [ a ccd:PlainVectorRegionA, ccd:NominalA, ccd:ObjectQ ];
+	wf:output [ a ccd:PlainVectorRegionA, ccd:NominalA, ccd:FieldQ ].
+
+#1-3 Merge
+<https://pro.arcgis.com/en/pro-app/tool-reference/data-management/merge.htm> tools:implements tools:Merge.
+tools:Merge rdfs:label "Combines multiple input datasets into a single, new output dataset. This tool can combine point, line, or polygon feature classes or tables.";
+	wf:input1 [ a ccd:PlainVectorRegionA, ccd:NominalA, ccd:FieldQ ];
+	wf:input2 [ a ccd:PlainVectorRegionA, ccd:NominalA, ccd:FieldQ];
+	wf:output [ a ccd:PlainVectorRegionA, ccd:NominalA, ccd:FieldQ ].
+
+#2-1 Euclidean distance
+<https://pro.arcgis.com/en/pro-app/tool-reference/spatial-analyst/euclidean-distance.htm> tools:implements tools:EuclideanDistanceObjectVector.
+tools:EuclideanDistanceObjectVector rdfs:label "Calculates, for each cell, the Euclidean distance to the closest source.";
+    wf:input1 [ a ccd:PointA, ccd:NominalA, ccd:ObjectQ ];
+    wf:output [ a ccd:RasterA, ccd:OrdinalA, ccd:ObjectQ ].
+    
+#2-2 Reclassify
+<https://pro.arcgis.com/en/pro-app/tool-reference/spatial-analyst/reclassify.htm> tools:implements tools:Reclassify.
+tools:Reclassify rdfs:label "Reclassifies (or changes) the values in a raster.";
+	wf:input1 [ a ccd:RasterA, ccd:OrdinalA, ccd:ObjectQ ];
+	wf:output [ a ccd:RasterA, ccd:OrdinalA, ccd:ObjectQ ].
+
+#2-3 Weighted overlay
+<https://pro.arcgis.com/en/pro-app/tool-reference/spatial-analyst/weighted-overlay.htm> tools:implements tools:WeightedOverlay.
+tools:WeightedOverlay rdfs:label "Overlays several rasters using a common measurement scale and weights each according to its importance.";
+	wf:input1 [ a ccd:RasterA, ccd:IntervalA, ccd:FieldQ ];
+	wf:input2 [ a ccd:RasterA, ccd:IntervalA, ccd:FieldQ ];
+	wf:input3 [ a ccd:RasterA, ccd:NominalA, ccd:FieldQ ];
+	wf:output [ a ccd:RasterA, ccd:IntervalA, ccd:FieldQ ].
+	
+#2-4 Conditional
+<https://pro.arcgis.com/en/pro-app/tool-reference/image-analyst/con-.htm> tools:implements tools:Conditional.
+tools:Conditional rdfs:label "Performs a conditional if/else evaluation on each of the input cells of an input raster.";
+	wf:input1 [ a ccd:RasterA, ccd:IntervalA, ccd:FieldQ ];
+	wf:output [ a ccd:RasterA, ccd:BooleanA, ccd:ObjectQ ].
+	
+#2-5 Majority filter
+<https://pro.arcgis.com/en/pro-app/tool-reference/spatial-analyst/majority-filter.htm> tools:implements tools:MajorityFilter.
+tools:MajorityFilter rdfs:lable "Replaces cells in a raster based on the majority of their contiguous neighboring cells.";
+	wf:input1 [ a ccd:RasterA, ccd:BooleanA, ccd:ObjectQ ];
+	wf:output [ a ccd:RasterA, ccd:BooleanA, ccd:FieldQ ].
+	
+#2-6 Raster to polygon
+<https://pro.arcgis.com/en/pro-app/tool-reference/conversion/raster-to-polygon.htm> tools:implements tools:Raster2Polygon.
+tools:Raster2Polygon rdfs:label "https://pro.arcgis.com/en/pro-app/tool-reference/conversion/raster-to-polygon.htm";
+	wf:input1 [ a ccd:RasterA, ccd:BooleanA, ccd:FieldQ ];
+	wf:output [ a ccd:PlainVectorRegionA, ccd:BooleanA, ccd:FieldQ ].
+
+#3-1 Extract by mask
+<https://pro.arcgis.com/en/pro-app/tool-reference/spatial-analyst/extract-by-mask.htm> tools:implements tools:ExtractByMask.
+tools:ExtractByMask rdfs:label "Extracts the cells of a raster that correspond to the areas defined by a mask.";
+	wf:input1 [ a ccd:PlainVectorRegionA, ccd:NominalA, ccd:FieldQ ];
+	wf:input2 [ a ccd:RasterA, ccd:IntervalA, ccd:FieldQ ];
+	wf:output [ a ccd:RasterA, ccd:IntervalA, ccd:FieldQ ].
+	
+#3-2 Surface Volume
+<https://pro.arcgis.com/en/pro-app/tool-reference/3d-analyst/surface-volume.htm> tools:implements tools:SurfaceVolume.
+tools:SurfaceVolume rdfs:label "Calculates the area and volume of the region between a surface and a reference plane.";
+	wf:input1 [ a ccd:RasterA, ccd:IntervalA, ccd:FieldQ ];
+	wf:output [ a ccd:, ccd:, ccd: ]. #table
+	
+#4-1 Polyline to raster
+<https://pro.arcgis.com/en/pro-app/tool-reference/conversion/polyline-to-raster.htm> tools:implements tools:Polyline2Raster.
+tools:PolylineToRaster rdfs:label "Converts polyline features to a raster dataset.";
+    wf:input1 [ a ccd:LineA, ccd:NominalA, ccd:NetworkQ ];
+    wf:output [ a ccd:Raster, ccd:NominalA, ccd:FieldQ ].
+    
+#4-2 Raster calculator
+<https://pro.arcgis.com/en/pro-app/tool-reference/image-analyst/raster-calculator.htm> tools:implements tools:RasterCalculator.
+tools:RasterCalculator rdfs:label "Builds and executes a single Map Algebra expression using Python syntax.";
+    wf:input1 [ a ccd:RasterA, ccd:NominalA, ccd:FieldQ ];
+    wf:input2 [ a ccd:RasterA, ccd:RatioA, ccd:FieldQ ];
+    wf:output [ a ccd:RasterA, ccd:RatioA, ccd:FieldQ ].
+
+#4-3 Cost distance 
+<https://pro.arcgis.com/en/pro-app/tool-reference/spatial-analyst/cost-distance.htm> tools:implements tools:CostDistance.
+tools:CostDistance rdfs:label "Calculates the least accumulative cost distance for each cell from or to the least-cost source over a cost surface.";
+	wf:input1 [ a ccd:RasterA, ccd:RatioA, ccd:FieldQ ];
+	wf:input2 [ a ccd:PointA, ccd:NominalA, ccd:ObjectQ ];
+	wf:output1 [ a ccd:RasterA, ccd:NominalA, ccd:ObjectQ ]; #output backlink raster
+	wf:output2 [ a ccd:RasterA, ccd:NominalA, ccd:ObjectQ ]. #output distance raster
+
+#4-4 Cost path
+<https://pro.arcgis.com/en/pro-app/tool-reference/spatial-analyst/cost-path.htm> tools:implements tools:CostPath.
+tools:CostPath rdfs:label "Calculates the least-cost path from a source to a destination.";
+    wf:input1 [ a ccd:RasterA, ccd:NominalA, ccd:ObjectQ ]; #output backlink raster
+    wf:input2 [ a ccd:RasterA, ccd:NominalA, ccd:ObjectQ ]; #output distance raster
+    wf:input3 [ a ccd:PointA, ccd:NominalA, ccd:ObjectQ ]; 
+    wf:output [ a ccd:RasterA, ccd:NominalA, ccd:ObjectQ ].
+
+
+#6-1 Conditional
+<https://pro.arcgis.com/en/pro-app/tool-reference/image-analyst/con-.htm> tools:implements tools:Conditional.
+tools:Conditional rdfs:label "Performs a conditional if/else evaluation on each of the input cells of an input raster.";
+	wf:input1 [ a ccd:RasterA, ccd:IntervalA, ccd:FieldQ ];
+	wf:output [ a ccd:RasterA, ccd:BooleanQ, ccd:FieldQ ].
+
+#6-2 Buffer
+<https://pro.arcgis.com/en/pro-app/tool-reference/analysis/buffer.htm> tools:implements tools:Buffer.
+tools:Buffer rdfs:label "Creates buffer polygons around input features to a specified distance.";
+	wf:input1 [ a ccd:PlainVectorRegionA, ccd:NominalA, ccd:ObjectQ ];
+	wf:output [ a ccd:PlainVectorRegionA, ccd:NominalA, ccd:FieldQ].
+ 
+#6-3 Zonal statistics as table
+<https://pro.arcgis.com/en/pro-app/tool-reference/spatial-analyst/zonal-statistics-as-table.htm> tools:implements tools:ZonalStatisticsAsTable.
+tools:ZonalStatisticsAsTable  rdfs:label "Summarizes the values of a raster within the zones of another dataset and reports the results to a table.";
+    wf:input1 [ a ccd:RasterA, ccd:BooleanA, ccd:FieldQ ];
+    wf:input2 [ a ccd:PlainVectorRegionA, ccd:BooleanA, ccd:FieldQ ];
+    wf:output [ a ccd:PlainVectorRegionA, ccd:CountA, ccd:FieldQ ]. #output is table
+
+#6-4 Join field
+<https://pro.arcgis.com/en/pro-app/tool-reference/data-management/join-field.htm> tools:implements tools:JoinField.
+tools:JoinField rdfs:label "Joins the contents of a table to another table based on a common attribute field.";
+    wf:input1 [ a ccd:PlainVectorRegionA, ccd:BooleanA, ccd:FieldQ ]; #table from 6-3 output
+    wf:input2 [ a ccd:PlainVectorRegionA, ccd:NominalA, ccd:ObjectQ ];
+    wf:output [ a ccd:PlainVectorRegionA, ccd:NominalA, ccd:ObjectQ ].

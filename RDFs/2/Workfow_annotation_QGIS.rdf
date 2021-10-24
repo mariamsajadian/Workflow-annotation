@@ -1,0 +1,179 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix wf: <http://geographicknowledge.de/vocab/Workflow.rdf#>.
+@prefix tools: <http://geographicknowledge.de/vocab/GISTools.rdf#>.
+@prefix ccd: <http://geographicknowledge.de/vocab/CoreConceptData.rdf#>.
+@prefix exm: <http://geographicknowledge.de/vocab/ExtensiveMeasures.rdf#>.
+@prefix maps: <https://maps.amsterdam.nl/>.
+@prefix arcnk:<https://www.arcgis.com/home/item.html?id=d6bd91b2fddc483b8ccbc66942db84cb>.
+@prefix pdok: <https://www.pdok.nl/introductie/-/article/actueel-hoogtebestand-nederland-ahn3->.
+@prefix lanex: <https://livingatlas2.arcgis.com/landsatexplorer/>.
+@prefix gpo: <https://www.geoportaaloverijssel.nl/metadata/dataset/fea292dd-6be4-48ba-b147-420f61b8f625>.
+@prefix kds: <https://bag.basisregistraties.overheid.nl>.
+@prefix cbs: <https://www.cbs.nl/nl-nl/dossier/nederland-regionaal/geografische-data/wijk-en-buurtkaart-2019>.
+
+# Worflow Roads and NDVI in Enschede 
+
+# Software: QGIS
+
+#Workflow the higher risk of air pollution in Randstad
+# Workflow metadata (result and data sources)
+
+_:wf1 a wf:Workflow;
+	rdfs:comment "Which places have the higher risk of air pollution in Randstad?"@en;
+	wf:source air_maps:open_geodata;	#PC4 areas
+	wf:source air_maps:functiekaart; #landuse
+	wf:edge _:wf1_1, _:wf1_2, _:wf1_3, _:wf1_4, _:wf1_5, _:wf1_6.
+
+_:wf1_1 tools:implements <https://docs.qgis.org/testing/en/docs/user_manual/processing_algs/qgis/vectoroverlay.html#qgisclip> ;
+	wf:input air_maps:Randstad_region;
+	wf:input air_maps:Roads;
+	wf:output _:clip_road.
+
+_:wf1_2 tools:implements <https://docs.qgis.org/testing/en/docs/user_manual/processing_algs/qgis/vectoroverlay.html#qgisclip> ; 
+	wf:input _:Randstad_region;
+	wf:input _:BBG2015_Publicatiebestand;
+	wf:output _:Ranstad_landuse. 
+
+_:wf1_3 tools:implements <https://docs.qgis.org/testing/en/docs/user_manual/processing_algs/qgis/vectorgeometry.html#buffer> ;
+	wf:input _:Industrial_areas;
+	wf:output _:Industrial_areas_Buffer.
+	
+_:wf1_4 tools:implements <https://docs.qgis.org/testing/en/docs/user_manual/processing_algs/qgis/vectorgeometry.html#buffer> ;
+	wf:input1 _:clip_road;
+	wf:output _:clip_road_Buffer.
+
+_:wf1_5 tools:implements <https://docs.qgis.org/3.10/en/docs/user_manual/processing_algs/qgis/vectorgeneral.html?%20#merge-vector-layers>;
+	wf:input2 _:Industrial_areas_Buffer;
+	wf:input3 _:clip_road_Buffer;
+	wf:output _:Merged_Buffers.
+	
+_:wf1_6 tools:implements <https://docs.qgis.org/testing/en/docs/user_manual/processing_algs/qgis/vectoroverlay.html#qgisclip>;
+    wf:input1 _:Randstad_landuse;
+    wf:input2 _:Merged_Buffers;
+    wf:output _:HighRisk_airpollution.
+
+#Site selection for school by weighted overlay
+
+_:wf2 a wf:Workflow;
+	rdfs:comment "Where are the best places to build school?"@en;
+	wf:source maps:ESRI; # https://desktop.arcgis.com/en/arcmap/10.3/guide-books/extensions/spatial-analyst/tutorial/about-the-spatial-analyst-tutorial.htm
+	wf:source maps:ESRI; 
+	wf:edge _:wf2_1, _:wf2_2, _:wf2_3, _:wf2_4, _:wf2_5, _:wf2_6, _:wf2_7, _:wf2_8, _:wf2_7, _:wf2_8, _:wf2_9.
+
+_:wf2_1 tools:implements <https://docs.qgis.org/3.10/en/docs/user_manual/processing_algs/gdal/vectorconversion.html#rasterize-vector-to-raster> ;
+	wf:input1 maps:schools;
+	wf:output _:Schools_raster .
+
+_:wf2_2 tools:implements <https://docs.qgis.org/3.10/en/docs/user_manual/processing_algs/gdal/vectorconversion.html#rasterize-vector-to-raster> ; 
+	wf:input1 _:rec_sites ;
+	wf:output _:Rec_sites_raster . 
+
+_:wf2_3 tools:implements <http://www.saga-gis.org/saga_tool_doc/6.3.0/grid_tools_26.html> ;
+	wf:input1 _:Schools_raster ;
+	wf:output _:EuclDist_school .
+	
+_:wf2_4 tools:implements <http://www.saga-gis.org/saga_tool_doc/6.3.0/grid_tools_26.html> ;
+	wf:input1 _:Rec_sites_raster ;
+	wf:output _:Eucl_dist_rec_sites .
+	
+_:wf2_5 tools:implements <https://docs.qgis.org/3.10/en/docs/user_manual/processing_algs/qgis/rasteranalysis.html#reclassify-by-table> ;
+	wf:input1 _:EuclDist_school ;
+	wf:output _:Reclass_euclD1 .
+	
+_:wf2_6 tools:implements <https://docs.qgis.org/3.10/en/docs/user_manual/processing_algs/qgis/rasteranalysis.html#reclassify-by-table> ;
+	wf:input1 _:Eucl_dist_rec_sites;
+	wf:output _:Reclass_euclD2.
+
+_:wf2_7 tools:implements <https://docs.qgis.org/testing/en/docs/user_manual/processing_algs/qgis/rasteranalysis.html#raster-calculator;
+	wf:input1 _:Reclass_eulcD1 ;
+	wf:input2 _:Reclass_euclD2 ;	
+	wf:input3 _:Landuse ;
+	wf:output _:Optimal_area .
+	
+_:wf2_8 tools:implements <http://www.saga-gis.org/saga_tool_doc/6.3.0/grid_filter_6.html> ;
+	wf:input1 _:Optimal_area ;
+	wf:output _:Final_output .
+	
+_:wf2_9 tools:implements <https://docs.qgis.org/testing/en/docs/user_manual/processing_algs/qgis/vectorgeometry.html#polygonize> ;
+	wf:input1 _:Final_output ;
+	wf:output _:Final_output_polygon .
+
+#Workflow for calculating sediment in a land
+
+_:wf3 a wf:Workflow;
+	rdfs:comment "How much sediment has been accumulated in a land?"@en;
+	wf:source _:open_geodata/?k=192/;	#PC4 areas
+	wf:source _:functiekaart/; #
+	wf:edge _:wf3_1, _:wf3_2.
+
+_:wf3_1 tools:implements <https://docs.qgis.org/3.10/en/docs/user_manual/processing_algs/gdal/rasterextraction.html?20raster%20mask%20layer#clip-raster-by-mask-layer> ;
+	wf:input1 _:Polygon_final;
+	wf:input2 _:DEM;
+	wf:output _:Dem_clip.
+	
+_:wf3_2 tools:implements <https://docs.qgis.org/testing/en/docs/user_manual/processing_algs/qgis/rasteranalysis.html#raster-surface-volume> ; 
+	wf:input1 _:Dem_clip;
+	wf:output _:value.
+
+# Worflow Roads and NDVI in Enschede 
+
+_:wf4 a wf:Workflow ;
+	rdfs:comment "What is the best option to walk from point A to point B using roads and NDVI?"@en ;
+	wf:source lanex:NDVI ; 
+	wf:source gpo:B2-nwb-punt-point ; #Hectometer points along national and provincial roads
+	wf:edge _:wf4_1, _:wf4_2, _:wf4_3, _:wf4_4, _:wf4_5, _:wf4_6 .
+
+_:wf4_1 wf:applicationOf <https://docs.qgis.org/3.10/en/docs/user_manual/processing_algs/gdal/vectorconversion.html#rasterize-vector-to-raster> ;
+		wf:input gpo:B2-nwb-punt-point ; #Enschede roads
+		wf:output _:roadRaster .
+
+_:wf4_2 wf:applicationOf <https://docs.qgis.org/testing/en/docs/user_manual/processing_algs/qgis/rasteranalysis.html#raster-calculator> ;
+		wf:input1 _:roadRaster ;
+		wf:input2 lanex:NDVI ;
+		wf:output _:costSurface .
+
+_:wf4_3 wf:applicationOf <https://docs.qgis.org/3.10/en/docs/user_manual/processing_algs/gdal/vectorconversion.html#rasterize-vector-to-raster> ;
+		wf:input _:source ; # A source point decided by user
+		wf:output _:sourceRaster .
+
+_:wf4_4 wf:applicationOf <http://www.saga-gis.org/saga_tool_doc/2.3.0/grid_analysis_0.html> ; # Accumulated cost
+		wf:input1 _:sourceRaster ;
+		wf:input2 _:costSurface ;
+		wf:output _:costDistance .
+		
+_:wf4_5 wf:applicationOf <https://docs.qgis.org/3.10/en/docs/user_manual/processing_algs/gdal/vectorconversion.html#rasterize-vector-to-raster> ;
+		wf:input _:destination ; # A destination point decided by user
+		wf:output _:destinationRaster .
+
+_:wf4_6 wf:applicationOf <http://www.saga-gis.org/saga_tool_doc/2.3.0/grid_analysis_5.html> ; # Least cost path
+		wf:input1 _:destinationRaster ;
+		wf:input2 _:costDistance ;
+		wf:output _:leastCostPath .
+		
+#Worflow Map storm surge in Utrecht
+#Worflow metadata (result and data sources)
+
+_:wf6 a wf:Workflow ;
+	rdfs:comment "Which areas are low-lying lands?"@en ;
+	rdfs:comment "Which areas and who might be affected by flood when hit by a storm?"@en ;
+	wf:source pdok:ahn3 ;
+	wf:source kds:Pand_Utrecht ;
+	wf:edge _:wf6_1, _:wf6_2, _:wf6_3 .
+
+_:wf6_1 wf:applicationOf <https://docs.qgis.org/testing/en/docs/user_manual/processing_algs/qgis/rasteranalysis.html#raster-calculator> ;
+		wf:input1 pdok:ahn3 ;
+		wf:output _:stormSurge3m .
+		
+_:wf6_2 wf:applicationOf <https://docs.qgis.org/testing/en/docs/user_manual/processing_algs/qgis/vectorgeometry.html#buffer> ;
+		wf:input1 kds:Pand_Utrecht ;
+		wf:output1 _:Pand_Utrecht_Buffer .
+		
+_:wf6_3 wf:applicationOf <https://docs.qgis.org/testing/en/docs/user_manual/processing_algs/qgis/rasteranalysis.html#zonal-statistics> ;
+		wf:input1 _:stormSurge3m ; 
+		wf:input2 _:Pand_Utrecht_Buffer ; 
+		wf:output _:ZonalSt_Pand .
+		

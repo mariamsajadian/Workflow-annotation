@@ -1,0 +1,219 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix wf: <http://geographicknowledge.de/vocab/Workflow.rdf#>.
+@prefix tools: <http://geographicknowledge.de/vocab/GISTools.rdf#>.
+@prefix ccd: <http://geographicknowledge.de/vocab/CoreConceptData.rdf#>.
+@prefix exm: <http://geographicknowledge.de/vocab/ExtensiveMeasures.rdf#>.
+@prefix maps: <https://maps.amsterdam.nl/>.
+@prefix arcnk:<https://www.arcgis.com/home/item.html?id=d6bd91b2fddc483b8ccbc66942db84cb>.
+@prefix pdok: <https://www.pdok.nl/introductie/-/article/actueel-hoogtebestand-nederland-ahn3->.
+@prefix lanex: <https://livingatlas2.arcgis.com/landsatexplorer/>.
+@prefix gpo: <https://www.geoportaaloverijssel.nl/metadata/dataset/fea292dd-6be4-48ba-b147-420f61b8f625>.
+@prefix kds: <https://bag.basisregistraties.overheid.nl>.
+@prefix cbs: <https://www.cbs.nl/nl-nl/dossier/nederland-regionaal/geografische-data/wijk-en-buurtkaart-2019>.
+
+
+# @author Mariam Sajjadian
+
+#Workflow the higher risk of air pollution in Randstad
+#software: ArcGIS
+#Workflow metadata (result and data sources)
+
+
+_:wf1 a wf:Workflow ;
+	rdfs:comment "Which places have a high risk of air pollution in Randstad?"@en ;
+	wf:source maps:Randstad_region ;
+	wf:source maps:Roads ;
+	wf:source _:BBG2015_Publicatiebestand ; 
+	wf:source _:Industrial_areas ;
+	wf:edge _:wf1_1, _:wf1_2, _:wf1_3, _:wf1_4, _:wf1_5, _:wf1_6 ;
+	wf:result _:HighRisk_airpollution .
+
+#Workflow nodes	
+
+_:wf1_1 wf:applicationOf <https://pro.arcgis.com/en/pro-app/tool-reference/analysis/clip.htm> ;
+	wf:input1 maps:Randstad_region ;
+	wf:input2 maps:Roads ;
+	wf:output _:clip_road .
+
+_:wf1_2 wf:applicationOf <https://pro.arcgis.com/en/pro-app/tool-reference/analysis/clip.htm> ; 
+	wf:input1 maps:Randstad_region ;
+	wf:input2 _:BBG2015_Publicatiebestand ;
+	wf:output _:Randstad_landuse . 
+
+_:wf1_3 wf:applicationOf <https://pro.arcgis.com/en/pro-app/tool-reference/analysis/buffer.htm> ;
+	wf:input1 _:Industrial_areas ;
+	wf:output _:Industrial_areas_Buffer .
+	
+_:wf1_4 wf:applicationOf <https://pro.arcgis.com/en/pro-app/tool-reference/analysis/buffer.htm> ;
+	wf:input1 _:clip_road ;
+	wf:output _:clip_road_Buffer .
+	
+_:wf1_5 wf:applicationOf <https://pro.arcgis.com/en/pro-app/tool-reference/feature-analysis/merge-layers.htm> ;
+	wf:input1 _:Industrial_areas_Buffer ;
+	wf:input2 _:clip_road_Buffer ;
+	wf:output _:Merged_Buffers .
+
+_:wf1_6 wf:applicationOf <https://pro.arcgis.com/en/pro-app/tool-reference/analysis/clip.htm> ;
+	wf:input1 _:Randstad_landuse ;
+	wf:input2 _:Merged_Buffers ;
+	wf:output _:HighRisk_airpollution .
+
+
+# @author Mariam Sajjadian
+
+#Site selection for school by weighted overlay
+#Software:ArcGIS
+#Workflow metadata (result and data sources)
+
+
+_:wf2 a wf:Workflow ;
+
+	rdfs:comment "Where are the best places to build schools?"@en ; # https://desktop.arcgis.com/en/arcmap/10.3/guide-books/extensions/spatial-analyst/tutorial/about-the-spatial-analyst-tutorial.htm
+	wf:source maps:schools ; 
+	wf:source _:landuse ;
+	wf:source _:rec_sites ;
+	wf:edge _:wf2_1, _:wf2_2, _:wf2_3, _:wf2_4, _:wf2_5, _:wf2_6, _:wf2_7, _:wf2_8 ;
+	wf:result _:finalpoly .
+
+_:wf2_1 wf:applicationOf <https://pro.arcgis.com/en/pro-app/tool-reference/spatial-analyst/euclidean-distance.htm> ;
+	wf:input1 maps:schools ;
+	wf:output _:EucDist_school .
+
+_:wf2_2 wf:applicationOf <https://pro.arcgis.com/en/pro-app/tool-reference/spatial-analyst/euclidean-distance.htm> ; 
+	wf:input1 _:rec_sites ;
+	wf:output _:EucDist_recsite . 
+
+_:wf2_3 wf:applicationOf <https://pro.arcgis.com/en/pro-app/tool-reference/spatial-analyst/reclassify.htm> ;
+	wf:input1 _:EucDist_school ;
+	wf:output _:Reclass_EucD1 .
+	
+_:wf2_4 wf:applicationOf <https://pro.arcgis.com/en/pro-app/tool-reference/spatial-analyst/reclassify.htm> ;
+	wf:input1 _:EucDist_recsite ;
+	wf:output _:Reclass_EucD2 .
+
+_:wf2_5 wf:applicationOf <https://pro.arcgis.com/en/pro-app/tool-reference/spatial-analyst/weighted-overlay.htm> ;
+	wf:input1 _:landuse ;
+	wf:input2 _:Reclass_EucD1 ;
+	wf:input3 _:Reclass_EucD2 ;
+	wf:output _:suitableSites .
+	
+_:wf2_6 wf:applicationOf <https://pro.arcgis.com/en/pro-app/tool-reference/spatial-analyst/con-.htm> ;
+	wf:input1 _:suitableSites ;
+	wf:output _:optimalArea .
+	
+_:wf2_7 wf:applicationOf <https://pro.arcgis.com/en/pro-app/tool-reference/spatial-analyst/majority-filter.htm> ;
+	wf:input1 _:optimalArea ;
+	wf:output _:final .
+
+_:wf2_8 wf:applicationOf <https://pro.arcgis.com/en/pro-app/tool-reference/conversion/raster-to-polygon.htm> ;
+	wf:input1 _:final ;
+	wf:output _:finalpoly .
+	
+
+# @author Mariam Sajjadian
+
+#Workflow for calculating sediment in a land
+#Software:ArcGIS
+#Workflow metadata (result and data sources)
+
+	
+_:wf3 a wf:Workflow ;
+	rdfs:comment "How much sediment has been accumulated in a land?"@en ;
+	wf:source _:polygon_Final ;	#land use
+	wf:source pdok:ahn3 ; #DEM
+	wf:edge _:wf3_1, _:wf3_2;
+	wf:result _:Volume .
+
+#Workflow nodes	
+	
+_:wf3_1 wf:applicationOf <https://pro.arcgis.com/en/pro-app/tool-reference/spatial-analyst/extract-by-mask.htm> ; 
+	wf:input1 pdok:ahn3 ;
+	wf:input2 _:polygon_Final ;
+	wf:output _:dem_Clip . 
+	
+_:wf3_2 wf:applicationOf <https://pro.arcgis.com/en/pro-app/tool-reference/3d-analyst/surface-volume.htm> ;
+	wf:input1 _:dem_Clip ;
+	wf:output _:Volume .
+
+
+
+#@author: Chia-Yun Chang
+
+# Worflow Greenness score for cycling or walking in Enschede
+#Software: ArcGIS
+#Worflow metadata (result and data sources)
+
+
+_:wf4 a wf:Workflow ;
+	rdfs:comment "What is the greenness score for cycling or walking in Enschede?"@en ;
+	wf:source lanex:NDVI ; 
+	wf:source gpo:B2-nwb-punt-point ; #Hectometer points along national and provincial roads
+	wf:source pdok:EnschedeDTM ;
+	wf:source _:sourcePoint ;
+	wf:source _:destinationPoint ;
+	wf:edge _:wf4_1, _:wf4_2, _:wf4_3, _:wf4_4, _:wf4_5, _:wf4_6 ;
+	wf:result _:costPathRaster .
+	
+#Workflow nodes	
+
+_:wf4_1 wf:applicationOf <https://pro.arcgis.com/en/pro-app/tool-reference/conversion/polyline-to-raster.htm> ;
+		wf:input1 gpo:B2-nwb-punt-point ; #road
+		wf:output _:Enschede_road_raster .
+
+_:wf4_2 wf:applicationOf <https://pro.arcgis.com/en/pro-app/tool-reference/image-analyst/raster-calculator.htm> ;
+		wf:input1 _:Enschede_road_raster ; 
+		wf:input2 lanex:NDVI ;
+		wf:output _:CostSurface .
+		
+_:wf4_3 wf:applicationOf <https://pro.arcgis.com/en/pro-app/tool-reference/spatial-analyst/cost-distance.htm> ;
+		wf:input1 _:CostSurface ; 
+		wf:input2 _:sourcePoint ;
+		wf:output _:distance_raster ;
+		wf:output2 _:backling_raster .
+
+_:wf4_4 wf:applicationOf <https://pro.arcgis.com/en/pro-app/tool-reference/spatial-analyst/cost-path.htm> ;
+		wf:input1 _:distance_raster ;
+		wf:input2 _:backling_raster ;
+		wf:input3 _:destinationPoint ;
+		wf:output _:costPathRaster .
+
+
+#@author: Chia-Yun Chang
+
+
+#Worflow Map storm surge in Utrecht
+#Software: ArcGIS
+#Worflow metadata (result and data sources)
+
+
+_:wf6 a wf:Workflow ;
+	rdfs:comment "Which areas are low-lying lands?"@en ;
+	rdfs:comment "Which areas and who might be affected by flood when hit by a storm?"@en ;
+	wf:source pdok:ahn3 ;
+	wf:source kds:BAG ;
+	wf:edge _:wf6_1, _:wf6_2, _:wf6_3, _:wf6_4 ;
+	wf:result _:ZonalSt_Pand .
+	
+#Workflow nodes
+
+_:wf6_1 wf:applicationOf <https://pro.arcgis.com/en/pro-app/tool-reference/spatial-analyst/con-.htm> ;
+		wf:input1 pdok:ahn3 ;
+		wf:output _:stormSurge3m .
+
+_:wf6_2 wf:applicationOf <https://pro.arcgis.com/en/pro-app/tool-reference/analysis/buffer.htm> ;
+		wf:input1 kds:BAG ;
+		wf:output _:Pand_Utrecht_Buffer .
+
+_:wf6_3 wf:applicationOf <https://desktop.arcgis.com/en/arcmap/10.3/tools/spatial-analyst-toolbox/zonal-statistics-as-table.htm> ;
+		wf:input1 _:stormSurge3m ;
+		wf:input2 _:Pand_Utrecht_Buffer ;
+		wf:output _:zonalTable .
+		
+_:wf6_4 wf:applicationOf <https://desktop.arcgis.com/en/arcmap/10.3/tools/data-management-toolbox/join-field.htm> ;
+		wf:input1 _:zonalTable ;
+		wf:input2 kds:BAG ;
+		wf:output _:ZonalSt_Pand .
