@@ -3,8 +3,11 @@ This work investigated the functional similarity of GIS software packages by ass
 More precisely, A GIS tool can be considered a GI-function which takes a certain input, transforms it, and returns an output. A workflow is then considered a sequence
 of functions and their inputs and outputs. This sequence of functions can be varied in different software packages and may be defined differently by GIS experts.
 The research pursues to find an answer to the question:
+
 To what extent can the semantic values of data inputs and outputs be used to generalize the functionality of tools and workflows in different GIS-software environments?
+
 The research question is broken down into the following sub-questions:
+
 1)	From a conceptual perspective, what is the relation between GIS-tools and workflows? 
 2)	How contentious is the interpretation of the semantics of inputs and outputs when using the CCD ontology?
 3)	To what extent do the semantics of data inputs and outputs of tools cover the semantically significant characteristics of GIS-tools? 
@@ -21,7 +24,7 @@ scenarios revolved around the following five questions:
 •	What is the greenness score for cycling or walking in Enschede?
 •	Which areas are low-lying lands? And Which areas might be affected by flood when hit by a storm?
 
-These scenarios were brock down into several steps. Fore example, here is a spatail question for scenario 4:
+These scenarios were brock down into several steps. Fore example, here is a spatial question for scenario 4:
 What is the greenness score for cycling or walking in Enschede?
 In this scenario, we wish to generate a raster road map that shows the greenness score calculated based on NDVI. The datasets needed for this scenario consists
 of Enschede roads polyline and the NDVI raster. The steps in the scenario are:
